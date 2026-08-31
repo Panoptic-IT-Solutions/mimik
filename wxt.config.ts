@@ -47,6 +47,12 @@ export default defineConfig({
         "scripting",
         "unlimitedStorage",
         "webNavigation",
+        // Kinde sign-in for Panoptic Docs. Both browsers honour the permission,
+        // but Firefox implements only launchWebAuthFlow and getRedirectURL, and
+        // its redirect URL is a per-installation UUID rather than one fixed
+        // extension id, so every Firefox install needs the wildcard callback
+        // allowed on the Kinde application.
+        "identity",
         ...(isFirefox ? [] : ["sidePanel", "offscreen"]),
       ],
       ...(isFirefox
@@ -59,12 +65,22 @@ export default defineConfig({
         128: 'icon128.png',
       },
       action: {},
+      // The capture notification draws the Panoptic mark into whatever page the
+      // user is recording. A content script may only load a packaged file from
+      // page context if that file is web accessible, so without this the mark
+      // is blocked and the notification comes up empty.
+      web_accessible_resources: [
+        {
+          resources: ["panoptic-mark.png"],
+          matches: ["<all_urls>"],
+        },
+      ],
       ...(isFirefox
         ? {
             sidebar_action: {
               default_panel: "sidepanel.html",
               default_icon: "icon32.png",
-              default_title: "Mimik",
+              default_title: "Panoptic Capture",
               open_at_install: false,
             },
             browser_specific_settings: {

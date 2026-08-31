@@ -73,17 +73,17 @@ describe('loadBranding', () => {
     }
   });
 
-  it('accepts a well-formed stored logo and does not reach for the Mimik fallback', async () => {
+  it('accepts a well-formed stored logo and does not reach for the Panoptic fallback', async () => {
     const brandLogo = { dataUrl: 'data:image/png;base64,AAA', width: 320, height: 80 };
     await fakeBrowser.storage.local.set({ brandLogo });
     expect((await loadBranding()).logo).toEqual(brandLogo);
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it('reaches for the packaged Mimik fallback when no logo is stored', async () => {
+  it('reaches for the packaged Panoptic fallback when no logo is stored', async () => {
     await loadBranding();
     expect(fetch).toHaveBeenCalledTimes(1);
-    expect(String(vi.mocked(fetch).mock.calls[0][0])).toContain('mimik-mark.png');
+    expect(String(vi.mocked(fetch).mock.calls[0][0])).toContain('panoptic-mark.png');
   });
 });
 

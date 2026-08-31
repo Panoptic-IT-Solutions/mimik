@@ -1,4 +1,4 @@
-import { Download, FileCode, FileDown, FileText, Loader2, Video } from 'lucide-react';
+import { CloudUpload, Download, FileCode, FileDown, FileText, Loader2, Video } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { i18n } from '#imports';
 import { downloadBlob, downloadText, safeFilename } from '@/core/export/download';
@@ -9,6 +9,7 @@ import { canExportVideo } from '@/core/export/video-support';
 import { getGuide } from '@/core/guides/service';
 import type { Guide, Screenshot, Step } from '@/core/guides/types';
 import { Button } from '@/ui/components/ui/button';
+import PublishDialog from '@/ui/shared/PublishDialog';
 
 interface ExportMenuProps {
   guideId: string;
@@ -26,6 +27,7 @@ export default function ExportMenu({
   screenshots: screenshotsProp,
 }: ExportMenuProps) {
   const [open, setOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [videoSupported, setVideoSupported] = useState(false);
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
@@ -90,12 +92,27 @@ export default function ExportMenu({
     }
   }
 
+  // Publishing sends the guide to the docs hub, it does not download a file, so it
+  // carries its own handler rather than another branch inside handleExport.
+  function handlePublish() {
+    setOpen(false);
+    setPublishOpen(true);
+  }
+
   const items = [
-    { type: 'docx' as const, icon: FileText, label: i18n.t('exportMenu.docx') },
-    { type: 'html' as const, icon: FileCode, label: i18n.t('exportMenu.html') },
-    { type: 'markdown' as const, icon: FileText, label: i18n.t('exportMenu.markdown') },
-    { type: 'pdf' as const, icon: FileDown, label: i18n.t('exportMenu.pdf') },
-    ...(videoSupported ? [{ type: 'video' as const, icon: Video, label: i18n.t('exportMenu.video') }] : []),
+    { key: 'panoptic', icon: CloudUpload, label: i18n.t('panoptic.publish'), onSelect: handlePublish },
+    { key: 'docx', icon: FileText, label: i18n.t('exportMenu.docx'), onSelect: () => handleExport('docx') },
+    { key: 'html', icon: FileCode, label: i18n.t('exportMenu.html'), onSelect: () => handleExport('html') },
+    {
+      key: 'markdown',
+      icon: FileText,
+      label: i18n.t('exportMenu.markdown'),
+      onSelect: () => handleExport('markdown'),
+    },
+    { key: 'pdf', icon: FileDown, label: i18n.t('exportMenu.pdf'), onSelect: () => handleExport('pdf') },
+    ...(videoSupported
+      ? [{ key: 'video', icon: Video, label: i18n.t('exportMenu.video'), onSelect: () => handleExport('video') }]
+      : []),
   ];
 
   return (
@@ -112,12 +129,12 @@ export default function ExportMenu({
       </Button>
 
       {open && !exporting && (
-        <div className="absolute right-0 mt-1 w-40 bg-card border border-border rounded-lg shadow-lg py-1 z-10">
+        <div className="absolute right-0 mt-1 w-52 bg-card border border-border rounded-lg shadow-lg py-1 z-10">
           {items.map((item) => (
             <button
-              key={item.type}
+              key={item.key}
               className="flex items-center gap-2 w-full px-3 py-2 text-sm text-foreground hover:bg-secondary"
-              onClick={() => handleExport(item.type)}
+              onClick={item.onSelect}
             >
               <item.icon size={14} />
               {item.label}
@@ -125,6 +142,14 @@ export default function ExportMenu({
           ))}
         </div>
       )}
+
+      <PublishDialog
+        open={publishOpen}
+        onOpenChange={setPublishOpen}
+        guideId={guideId}
+        guide={guideProp}
+        steps={stepsProp}
+      />
     </div>
   );
 }

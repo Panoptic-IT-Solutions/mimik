@@ -1,21 +1,28 @@
-# Mimik
+# Panoptic Capture
 
-Open-source Chrome extension that auto-captures browser workflows and generates step-by-step guides. No backend, no account, no data leaves the browser.
+Browser extension that auto-captures browser workflows and generates step-by-step guides, then publishes them to the Panoptic documentation hub.
+
+This is the Panoptic fork of [westpoint-io/mimik](https://github.com/westpoint-io/mimik), tracked as the git remote `upstream`. Upstream is local-first with no backend. The fork adds one outbound path, publishing a finished guide to the documentation hub, which is the only thing that leaves the browser besides upstream's optional AI, voice and favicon calls.
+
+Naming: **Panoptic Capture** is this extension, **Panoptic Docs** is the documentation hub it publishes to, and **PanopticAI** is the chat agent. They are three different products, so do not use one name for another.
+
+Identifiers still say `mimik` on purpose. The IndexedDB database name (`super("mimik")` in `core/guides/db.ts`), the BroadcastChannel `mimik-guides`, the port names in `lib/port.ts`, and the `mimik-` CSS class and element-id prefixes injected into customer pages are all wire and storage identifiers. Renaming any of them orphans recorded guides or breaks messaging between an old and a new build mid-update, so leave them alone.
 
 ## What It Does
 
-You click "Record," perform a workflow in your browser, and Mimik automatically captures each action as a step with an annotated screenshot and description. You can edit the guide, replay it on a live page, or export it as a file.
+You click "Record," perform a workflow in your browser, and Panoptic Capture automatically captures each action as a step with an annotated screenshot and description. You can edit the guide, replay it on a live page, export it as a file, or publish it to the Panoptic documentation hub.
 
-**Core loop: Record → Edit → Replay or Export.**
+**Core loop: Record → Edit → Replay, Export or Publish.**
 
 ## Architecture
 
-**Everything runs in the Chrome extension. No backend.**
+**Everything runs in the extension except publishing. There is no backend of our own.**
 
 - Storage: IndexedDB via Dexie.js (browser-local)
 - AI descriptions: optional, user provides their own API key in settings
 - Export: generated client-side (no server rendering)
-- No auth, no database, no hosting, no Docker
+- Publish: Kinde sign-in over `chrome.identity`, then a call to the Panoptic Docs hub
+- No database, no hosting, no Docker
 
 ### Directory Structure
 
@@ -160,7 +167,7 @@ Content Script ←→ Background Service Worker ←→ Sidepanel / Fullview
 
 ## DOM Context (AI Input)
 
-Instead of sending screenshots to the AI for step descriptions, Mimik extracts a lightweight DOM context (~50-100 tokens) from around the target element:
+Instead of sending screenshots to the AI for step descriptions, Panoptic Capture extracts a lightweight DOM context (~50-100 tokens) from around the target element:
 
 ```
 Page: "Public profile - Settings" /settings/profile

@@ -1,21 +1,28 @@
 <div align="center"><a name="readme-top"></a>
 
-<img src="public/mascot.svg" width="140" height="140" alt="Mimik mascot" />
+<img src="public/panoptic-mark.png" width="140" height="140" alt="Panoptic Capture" />
 
-# Mimik
+# Panoptic Capture
 
 **English** · [Español](./README.es.md) · [Português (BR)](./README.pt-BR.md) · [Français](./README.fr.md)
 
-**Auto-capture any browser workflow into a step-by-step guide. No account, no cloud, no tracking.**
+**Auto-capture any browser workflow into a step-by-step guide, then publish it to the Panoptic documentation hub.**
 
-Click record, do the thing, get a polished guide with annotated screenshots. Narrate it as you go, edit it after, then replay or export.
+Click record, do the thing, get a polished guide with annotated screenshots. Narrate it as you go, edit it after, then replay, export or publish.
+
+> **This is the Panoptic fork of [westpoint-io/mimik](https://github.com/westpoint-io/mimik).**
+> The upstream extension is a local-first guide recorder: no account, no cloud, no tracking. This
+> fork adds one thing, publishing a finished guide straight to the Panoptic documentation hub, which
+> means a Kinde sign-in and a network call that upstream does not have. Everything else still runs
+> in your browser. Upstream is tracked as the git remote `upstream`, so `git fetch upstream` pulls
+> their work in.
 
 <!-- SHIELD GROUP -->
 
 [![License][license-shield]][license-link]
 [![Manifest V3][mv3-shield]][mv3-link]
-[![100% Local][local-shield]][local-link]
-[![No Account][no-account-shield]][no-account-link]
+[![Local by default][local-shield]][local-link]
+[![Account to publish][no-account-shield]][no-account-link]
 <br/>
 [![Stars][star-shield]][star-link]
 [![Contributors][contributors-shield]][contributors-link]
@@ -49,18 +56,21 @@ Click record, do the thing, get a polished guide with annotated screenshots. Nar
 ## 📺 Demo
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/9de20b45-2256-4127-8242-141cf1802f39" alt="Mimik demo" width="800" />
+<img src="https://github.com/user-attachments/assets/9de20b45-2256-4127-8242-141cf1802f39" alt="Panoptic Capture demo" width="800" />
 </div>
 
 ## 👋 Getting Started
 
-Mimik turns any repetitive browser task into a documented, shareable guide in seconds. It runs entirely in your browser. No backend, no account, no telemetry, and nothing ever leaves your device.
+Panoptic Capture turns any repetitive browser task into a documented, shareable guide in seconds. Recording and editing run entirely in your browser. Nothing leaves your device until you choose to publish a guide to the documentation hub.
 
-Whether you're documenting internal tools, writing product tutorials, or onboarding a teammate, Mimik captures every click, keystroke, and navigation automatically so you can focus on the work.
+Whether you're documenting internal tools, writing product tutorials, or onboarding a teammate, Panoptic Capture captures every click, keystroke, and navigation automatically so you can focus on the work.
 
 Every meaningful action becomes a step: clicks on buttons and links, form inputs, keyboard shortcuts, clipboard actions, drag events, and page navigations. Rapid clicks on nearby elements are merged so guides stay clean, and clicks are intercepted before the page navigates away, so nothing is lost on SPAs or full page loads.
 
 Each step gets a screenshot with the clicked element highlighted and zoomed in. No manual cropping, no annotation tools to learn.
+
+The three listings below are upstream's Mimik, not this fork. Panoptic Capture is not in any
+store, so build it and load it unpacked. See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 | Browser | Version | Install |
 | ------- | ------- | ------- |
@@ -68,14 +78,14 @@ Each step gets a screenshot with the clicked element highlighted and zoomed in. 
 | Firefox | [![Firefox Version][firefox-version-shield]][firefox-link] | [Firefox Add-ons][firefox-link]  |
 | Edge    | [![Edge Version][edge-version-shield]][edge-link]          | [Microsoft Edge Add-ons][edge-link] |
 
-Available in English, Spanish, Brazilian Portuguese, French, and German. The AI description language is set separately, so you can run Mimik in English and generate guides in Spanish, or any combination.
+Available in English, Spanish, Brazilian Portuguese, French, and German. The AI description language is set separately, so you can run Panoptic Capture in English and generate guides in Spanish, or any combination.
 
 > \[!IMPORTANT]
 >
-> **⭐️ Star the repo** if Mimik saves you time. It helps other people discover it!
+> **⭐️ Star [westpoint-io/mimik](https://github.com/westpoint-io/mimik)**, the upstream project this fork is built on. It helps other people discover it!
 
 <a href="https://github.com/westpoint-io/mimik">
-  <img width="100%" alt="Star Mimik on GitHub" src="https://github.com/user-attachments/assets/80d304da-a765-4bde-bf49-b1bdcb4fe804" />
+  <img width="100%" alt="Star mimik on GitHub" src="https://github.com/user-attachments/assets/80d304da-a765-4bde-bf49-b1bdcb4fe804" />
 </a>
 
 <div align="right">
@@ -88,7 +98,7 @@ Available in English, Spanish, Brazilian Portuguese, French, and German. The AI 
 
 ### 🔒 Smart Blur
 
-Mimik automatically detects and blurs sensitive data in your screenshots: emails, phone numbers, SSNs, credit cards, IP addresses, MAC addresses. Toggle each category independently.
+Panoptic Capture automatically detects and blurs sensitive data in your screenshots: emails, phone numbers, SSNs, credit cards, IP addresses, MAC addresses. Toggle each category independently.
 
 Need to blur something custom? The manual blur picker lets you select any DOM element and mask it across every screenshot where it appears.
 
@@ -102,7 +112,7 @@ Need to blur something custom? The manual blur picker lets you select any DOM el
 
 ### 🧠 AI descriptions (optional)
 
-Bring your own API key (OpenAI or Anthropic) and Mimik generates human-readable step descriptions like *"Click the **Submit** button to save changes"* instead of the rule-based `Click Submit`.
+Bring your own API key (OpenAI or Anthropic) and Panoptic Capture generates human-readable step descriptions like *"Click the **Submit** button to save changes"* instead of the rule-based `Click Submit`.
 
 Descriptions are generated from a lightweight DOM context (~50-100 tokens), not screenshots. Roughly 15-30x cheaper than vision models. Choose the language you want descriptions in (English, Spanish, Portuguese, French, German).
 
@@ -116,7 +126,7 @@ Descriptions are generated from a lightweight DOM context (~50-100 tokens), not 
 
 ### ▶️ Guide Me replay
 
-Replay any guide live on a real page. Mimik highlights the next element to click, tracks your progress step by step, and advances automatically as you interact. Perfect for onboarding teammates or walking through a process yourself.
+Replay any guide live on a real page. Panoptic Capture highlights the next element to click, tracks your progress step by step, and advances automatically as you interact. Perfect for onboarding teammates or walking through a process yourself.
 
 <img src="https://github.com/user-attachments/assets/56ffca1d-5074-491f-8571-dd70782d4b05" alt="Guide Me replay" width="800" />
 
@@ -128,7 +138,7 @@ Replay any guide live on a real page. Mimik highlights the next element to click
 
 ### 🎙️ Voice narration (optional)
 
-Talk through the workflow out loud while you record and Mimik turns what you said into the step
+Talk through the workflow out loud while you record and Panoptic Capture turns what you said into the step
 descriptions. Audio is transcribed with your own key (OpenAI or Groq) and matched to the steps it
 belongs to, so you narrate once instead of writing every step by hand.
 
@@ -176,9 +186,9 @@ All exports are generated client-side. Nothing touches a server.
 
 ## 🔐 Privacy & storage
 
-Guides, steps, and screenshots live on your device. There's no backend, no account, no telemetry. Your API keys (if you bring one) never leave your browser — they're stored locally and used to call the provider you chose directly.
+Guides, steps, and screenshots live on your device. There's no telemetry. Your API keys (if you bring one) never leave your browser — they're stored locally and used to call the provider you chose directly.
 
-Two things do leave the browser, both documented in the [privacy policy](https://mimik.westpoint.io/privacy/): site icons are fetched from Google's favicon service, which sends that site's domain, and the optional AI and voice features send text or audio to the provider you configured.
+Three things do leave the browser. Two are upstream's and are documented in their [privacy policy](https://mimik.westpoint.io/privacy/): site icons are fetched from Google's favicon service, which sends that site's domain, and the optional AI and voice features send text or audio to the provider you configured. The third is this fork's: publishing a guide sends that guide's steps and screenshots to the Panoptic documentation hub, and only when you press Publish.
 
 <div align="right">
 
@@ -202,6 +212,8 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup, project layout, 
 
 MIT © [Westpoint](https://github.com/westpoint-io). See [LICENSE](./LICENSE) for details.
 
+This fork keeps that licence and that copyright. Panoptic IT Solutions wrote the publish-to-documentation-hub work on top of it.
+
 <div align="right">
 
 [![Back to top][back-to-top]](#readme-top)
@@ -218,11 +230,11 @@ MIT © [Westpoint](https://github.com/westpoint-io). See [LICENSE](./LICENSE) fo
 [mv3-shield]: https://img.shields.io/badge/manifest-v3-3730A3?style=flat-square&labelColor=1E1B4B
 [mv3-link]: https://developer.chrome.com/docs/extensions/mv3/intro/
 
-[local-shield]: https://img.shields.io/badge/storage-100%25%20local-4F46E5?style=flat-square&labelColor=1E1B4B
-[local-link]: #-100-local-storage
+[local-shield]: https://img.shields.io/badge/storage-local%20by%20default-4F46E5?style=flat-square&labelColor=1E1B4B
+[local-link]: #-privacy--storage
 
-[no-account-shield]: https://img.shields.io/badge/account-not%20required-4F46E5?style=flat-square&labelColor=1E1B4B
-[no-account-link]: #-100-local-storage
+[no-account-shield]: https://img.shields.io/badge/account-only%20to%20publish-4F46E5?style=flat-square&labelColor=1E1B4B
+[no-account-link]: #-privacy--storage
 
 [star-shield]: https://img.shields.io/github/stars/westpoint-io/mimik?style=flat-square&label=stars&color=4F46E5&labelColor=1E1B4B
 [star-link]: https://github.com/westpoint-io/mimik/stargazers
