@@ -1,6 +1,8 @@
-# Contributing to Mimik
+# Contributing to Panoptic Capture
 
 Thanks for your interest in contributing! Bug reports, feature requests, PRs, and translations are all welcome.
+
+Panoptic Capture is the Panoptic fork of [westpoint-io/mimik](https://github.com/westpoint-io/mimik). Anything that is not about publishing to the Panoptic documentation hub belongs upstream, so raise it there and we will pick it up on the next fetch.
 
 ## Licensing
 
@@ -19,10 +21,13 @@ You represent that you have the right to submit the contribution and that it doe
 ### Install
 
 ```bash
-git clone https://github.com/westpoint-io/mimik.git
+git clone https://github.com/Panoptic-IT-Solutions/mimik.git
 cd mimik
+git remote add upstream https://github.com/westpoint-io/mimik.git
 pnpm install
 ```
+
+The `upstream` remote is what `git fetch upstream` reads. Add it before you go looking for a change that has not reached the fork yet.
 
 ### Run in development
 
@@ -135,4 +140,4 @@ Open an issue with:
 - Steps to reproduce
 - Browser + version (Chrome / Firefox)
 - Screenshots if relevant
-- Any errors from the extension console (`chrome://extensions` → Mimik → "service worker" → Console, or Firefox `about:debugging` → Inspect)
+- Any errors from the extension console (`chrome://extensions` → Panoptic Capture → "service worker" → Console, or Firefox `about:debugging` → Inspect)

@@ -1,4 +1,4 @@
-import { FileCode, FileDown, FileText, Loader2, Video } from 'lucide-react';
+import { CloudUpload, FileCode, FileDown, FileText, Loader2, Video } from 'lucide-react';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { i18n } from '#imports';
 import { downloadBlob, downloadText, safeFilename } from '@/core/export/download';
@@ -18,6 +18,7 @@ import { canExportVideo, STEP_SECONDS } from '@/core/export/video-support';
 import type { Guide, Screenshot, Step } from '@/core/guides/types';
 import { Button } from '@/ui/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/ui/components/ui/dialog';
+import PublishDialog from '@/ui/shared/PublishDialog';
 
 const VideoStepPlayer = lazy(() => import('@/ui/fullview/VideoStepPlayer'));
 
@@ -36,6 +37,7 @@ type ExportFormat = 'docx' | 'html' | 'markdown' | 'pdf' | 'video';
 type PreviewMode = 'document' | 'video';
 
 export default function ExportPreviewModal({ open, onOpenChange, guide, steps, screenshots }: ExportPreviewModalProps) {
+  const [publishOpen, setPublishOpen] = useState(false);
   const [options, setOptions] = useState<ExportOptions>(DEFAULT_EXPORT_OPTIONS);
   const [preview, setPreview] = useState('');
   const [rendering, setRendering] = useState(false);
@@ -190,197 +192,225 @@ export default function ExportPreviewModal({ open, onOpenChange, guide, steps, s
   ];
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[96vw] max-w-[96vw] sm:max-w-[1180px] p-0 gap-0 overflow-hidden">
-        <DialogHeader className="px-5 py-3.5 border-b border-border">
-          <DialogTitle className="text-[15px] font-bold">{i18n.t('exportPreview.title')}</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="w-[96vw] max-w-[96vw] sm:max-w-[1180px] p-0 gap-0 overflow-hidden">
+          <DialogHeader className="px-5 py-3.5 border-b border-border">
+            <DialogTitle className="text-[15px] font-bold">{i18n.t('exportPreview.title')}</DialogTitle>
+          </DialogHeader>
 
-        <div className="flex h-[74vh] min-h-[420px]">
-          <div className="w-[268px] shrink-0 border-r border-border p-4 space-y-4 overflow-y-auto">
-            <div className="space-y-3">
-              {toggles.map(({ key, label, hint }) => (
-                <div key={key} className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-[12px] font-semibold text-foreground">{label}</div>
-                    <div className="text-[10px] text-muted-foreground leading-snug">{hint}</div>
-                  </div>
-                  <button
-                    type="button"
-                    aria-label={label}
-                    aria-pressed={Boolean(options[key])}
-                    onClick={() => update({ [key]: !options[key] } as Partial<ExportOptions>)}
-                    className={`w-9 h-5 rounded-full transition-colors relative shrink-0 mt-0.5 ${
-                      options[key] ? 'bg-accent' : 'bg-border'
-                    }`}
-                  >
-                    <span
-                      className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-                        options[key] ? 'translate-x-4' : 'translate-x-0'
+          <div className="flex h-[74vh] min-h-[420px]">
+            <div className="w-[268px] shrink-0 border-r border-border p-4 space-y-4 overflow-y-auto">
+              <div className="space-y-3">
+                {toggles.map(({ key, label, hint }) => (
+                  <div key={key} className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="text-[12px] font-semibold text-foreground">{label}</div>
+                      <div className="text-[10px] text-muted-foreground leading-snug">{hint}</div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={label}
+                      aria-pressed={Boolean(options[key])}
+                      onClick={() => update({ [key]: !options[key] } as Partial<ExportOptions>)}
+                      className={`w-9 h-5 rounded-full transition-colors relative shrink-0 mt-0.5 ${
+                        options[key] ? 'bg-accent' : 'bg-border'
                       }`}
-                    />
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            <div className={`pt-3 border-t border-border ${options.screenshots ? '' : 'opacity-45'}`}>
-              <div className="text-[12px] font-semibold text-foreground mb-2">{i18n.t('exportPreview.imageScale')}</div>
-              <div className="flex gap-1.5">
-                {IMAGE_SCALES.map((scale) => (
-                  <button
-                    key={scale}
-                    type="button"
-                    disabled={!options.screenshots}
-                    onClick={() => update({ imageScale: scale })}
-                    className={`flex-1 px-2 py-1.5 rounded-lg border text-[11px] transition-colors disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted-foreground ${
-                      options.imageScale === scale
-                        ? 'border-accent text-accent'
-                        : 'border-border text-muted-foreground hover:border-accent hover:text-foreground'
-                    }`}
-                  >
-                    {i18n.t(`exportPreview.scale_${scale}`)}
-                  </button>
+                    >
+                      <span
+                        className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                          options[key] ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                  </div>
                 ))}
               </div>
-            </div>
 
-            {videoSupported && (
-              <div className="pt-3 border-t border-border">
+              <div className={`pt-3 border-t border-border ${options.screenshots ? '' : 'opacity-45'}`}>
                 <div className="text-[12px] font-semibold text-foreground mb-2">
-                  {i18n.t('exportPreview.resolution')}
+                  {i18n.t('exportPreview.imageScale')}
                 </div>
                 <div className="flex gap-1.5">
-                  {VIDEO_RESOLUTIONS.map((value) => (
+                  {IMAGE_SCALES.map((scale) => (
                     <button
-                      key={value}
+                      key={scale}
                       type="button"
-                      onClick={() => update({ resolution: value })}
-                      className={`flex-1 px-2 py-1.5 rounded-lg border text-[11px] transition-colors ${
-                        options.resolution === value
+                      disabled={!options.screenshots}
+                      onClick={() => update({ imageScale: scale })}
+                      className={`flex-1 px-2 py-1.5 rounded-lg border text-[11px] transition-colors disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted-foreground ${
+                        options.imageScale === scale
                           ? 'border-accent text-accent'
                           : 'border-border text-muted-foreground hover:border-accent hover:text-foreground'
                       }`}
                     >
-                      {i18n.t(`exportPreview.res_${value}`)}
+                      {i18n.t(`exportPreview.scale_${scale}`)}
                     </button>
                   ))}
                 </div>
               </div>
-            )}
 
-            <div className="pt-3 border-t border-border space-y-1.5">
-              {formats.map(({ key, icon: Icon, label }) => {
-                const cancellable = exporting === key && key === 'video';
-                return (
-                  <Button
-                    key={key}
-                    size="sm"
-                    variant="ghost"
-                    disabled={exporting !== null && !cancellable}
-                    onClick={() => (cancellable ? downloadAbort.current?.abort() : handleExport(key))}
-                    className="w-full justify-start gap-2 border border-border hover:border-accent"
-                  >
-                    {exporting === key ? <Loader2 size={14} className="animate-spin" /> : <Icon size={14} />}
-                    {cancellable
-                      ? i18n.t('exportMenu.cancelProgress', [String(Math.round(downloadProgress * 100))])
-                      : i18n.t('exportPreview.download', [label])}
-                  </Button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {videoSupported && (
-              <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 border-b border-border">
-                {modes.map(({ key, icon: Icon, label }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    aria-pressed={mode === key}
-                    onClick={() => setMode(key)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] transition-colors ${
-                      mode === key
-                        ? 'border-accent text-accent bg-secondary'
-                        : 'border-border text-muted-foreground hover:border-accent hover:text-foreground'
-                    }`}
-                  >
-                    <Icon size={13} />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="flex-1 bg-[#3F3F46] relative overflow-hidden">
-              {mode === 'document' ? (
-                <>
-                  {rendering && (
-                    <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 text-[10px] text-muted-foreground bg-card border border-border rounded-full px-2.5 py-1">
-                      <Loader2 size={11} className="animate-spin" />
-                      {i18n.t('exportPreview.rendering')}
-                    </div>
-                  )}
-                  <iframe
-                    title={i18n.t('exportPreview.title')}
-                    srcDoc={preview}
-                    onLoad={(event) => {
-                      const doc = event.currentTarget.contentDocument;
-                      if (doc) paginatePreview(doc);
-                    }}
-                    className="w-full h-full border-0"
-                  />
-                </>
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  {videoPending ? (
-                    <div className="max-w-[340px] flex flex-col items-center gap-2 rounded-xl border border-border bg-card px-5 py-4 text-center">
-                      <Video size={20} className="text-accent" />
-                      <div className="text-[12px] font-semibold text-foreground">
-                        {i18n.t('exportPreview.videoReady', [
-                          String(steps.length),
-                          String(Math.round((steps.length * STEP_SECONDS) / 60)),
-                        ])}
-                      </div>
-                      <div className="text-[11px] text-muted-foreground leading-snug">
-                        {i18n.t('exportPreview.videoReadyHint')}
-                      </div>
-                      <Button size="sm" className="mt-1" onClick={() => setVideoRequested(true)}>
-                        {i18n.t('exportPreview.videoGenerate')}
-                      </Button>
-                    </div>
-                  ) : videoError ? (
-                    <div className="max-w-[320px] rounded-xl border border-border bg-card px-4 py-3 text-center">
-                      <div className="text-[12px] font-semibold text-foreground">
-                        {i18n.t('exportPreview.videoFailed')}
-                      </div>
-                      <div className="mt-1 text-[11px] text-muted-foreground leading-snug">{videoError}</div>
-                    </div>
-                  ) : videoUrl ? (
-                    <Suspense fallback={null}>
-                      <VideoStepPlayer key={videoUrl} src={videoUrl} chapters={videoChapters} />
-                    </Suspense>
-                  ) : (
-                    <div className="flex flex-col items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
-                      <div className="text-[11px] text-muted-foreground">{i18n.t('exportPreview.encodingVideo')}</div>
-                      <div className="h-1.5 w-40 overflow-hidden rounded-full bg-border">
-                        <div
-                          className="h-full rounded-full bg-accent transition-[width] duration-150"
-                          style={{ width: `${Math.round(videoProgress * 100)}%` }}
-                        />
-                      </div>
-                      <div className="text-[10px] font-semibold tabular-nums text-foreground">
-                        {Math.round(videoProgress * 100)}%
-                      </div>
-                    </div>
-                  )}
+              {videoSupported && (
+                <div className="pt-3 border-t border-border">
+                  <div className="text-[12px] font-semibold text-foreground mb-2">
+                    {i18n.t('exportPreview.resolution')}
+                  </div>
+                  <div className="flex gap-1.5">
+                    {VIDEO_RESOLUTIONS.map((value) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => update({ resolution: value })}
+                        className={`flex-1 px-2 py-1.5 rounded-lg border text-[11px] transition-colors ${
+                          options.resolution === value
+                            ? 'border-accent text-accent'
+                            : 'border-border text-muted-foreground hover:border-accent hover:text-foreground'
+                        }`}
+                      >
+                        {i18n.t(`exportPreview.res_${value}`)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
+
+              {/* Publishing sends the guide to the documentation hub rather than
+                downloading a file, so it sits above the downloads under its own
+                rule rather than reading as a sixth format. */}
+              <div className="pt-3 border-t border-border">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={exporting !== null}
+                  onClick={() => setPublishOpen(true)}
+                  className="w-full justify-start gap-2 border border-border hover:border-accent"
+                >
+                  <CloudUpload size={14} />
+                  {i18n.t('panoptic.publish')}
+                </Button>
+              </div>
+
+              <div className="pt-3 border-t border-border space-y-1.5">
+                {formats.map(({ key, icon: Icon, label }) => {
+                  const cancellable = exporting === key && key === 'video';
+                  return (
+                    <Button
+                      key={key}
+                      size="sm"
+                      variant="ghost"
+                      disabled={exporting !== null && !cancellable}
+                      onClick={() => (cancellable ? downloadAbort.current?.abort() : handleExport(key))}
+                      className="w-full justify-start gap-2 border border-border hover:border-accent"
+                    >
+                      {exporting === key ? <Loader2 size={14} className="animate-spin" /> : <Icon size={14} />}
+                      {cancellable
+                        ? i18n.t('exportMenu.cancelProgress', [String(Math.round(downloadProgress * 100))])
+                        : i18n.t('exportPreview.download', [label])}
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col overflow-hidden">
+              {videoSupported && (
+                <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 border-b border-border">
+                  {modes.map(({ key, icon: Icon, label }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      aria-pressed={mode === key}
+                      onClick={() => setMode(key)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] transition-colors ${
+                        mode === key
+                          ? 'border-accent text-accent bg-secondary'
+                          : 'border-border text-muted-foreground hover:border-accent hover:text-foreground'
+                      }`}
+                    >
+                      <Icon size={13} />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex-1 bg-[#3F3F46] relative overflow-hidden">
+                {mode === 'document' ? (
+                  <>
+                    {rendering && (
+                      <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 text-[10px] text-muted-foreground bg-card border border-border rounded-full px-2.5 py-1">
+                        <Loader2 size={11} className="animate-spin" />
+                        {i18n.t('exportPreview.rendering')}
+                      </div>
+                    )}
+                    <iframe
+                      title={i18n.t('exportPreview.title')}
+                      srcDoc={preview}
+                      onLoad={(event) => {
+                        const doc = event.currentTarget.contentDocument;
+                        if (doc) paginatePreview(doc);
+                      }}
+                      className="w-full h-full border-0"
+                    />
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    {videoPending ? (
+                      <div className="max-w-[340px] flex flex-col items-center gap-2 rounded-xl border border-border bg-card px-5 py-4 text-center">
+                        <Video size={20} className="text-accent" />
+                        <div className="text-[12px] font-semibold text-foreground">
+                          {i18n.t('exportPreview.videoReady', [
+                            String(steps.length),
+                            String(Math.round((steps.length * STEP_SECONDS) / 60)),
+                          ])}
+                        </div>
+                        <div className="text-[11px] text-muted-foreground leading-snug">
+                          {i18n.t('exportPreview.videoReadyHint')}
+                        </div>
+                        <Button size="sm" className="mt-1" onClick={() => setVideoRequested(true)}>
+                          {i18n.t('exportPreview.videoGenerate')}
+                        </Button>
+                      </div>
+                    ) : videoError ? (
+                      <div className="max-w-[320px] rounded-xl border border-border bg-card px-4 py-3 text-center">
+                        <div className="text-[12px] font-semibold text-foreground">
+                          {i18n.t('exportPreview.videoFailed')}
+                        </div>
+                        <div className="mt-1 text-[11px] text-muted-foreground leading-snug">{videoError}</div>
+                      </div>
+                    ) : videoUrl ? (
+                      <Suspense fallback={null}>
+                        <VideoStepPlayer key={videoUrl} src={videoUrl} chapters={videoChapters} />
+                      </Suspense>
+                    ) : (
+                      <div className="flex flex-col items-center gap-2 bg-card border border-border rounded-xl px-4 py-3">
+                        <div className="text-[11px] text-muted-foreground">{i18n.t('exportPreview.encodingVideo')}</div>
+                        <div className="h-1.5 w-40 overflow-hidden rounded-full bg-border">
+                          <div
+                            className="h-full rounded-full bg-accent transition-[width] duration-150"
+                            style={{ width: `${Math.round(videoProgress * 100)}%` }}
+                          />
+                        </div>
+                        <div className="text-[10px] font-semibold tabular-nums text-foreground">
+                          {Math.round(videoProgress * 100)}%
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* A sibling of the preview, never a child of it. Nested inside, this
+          dialog was laid out against the preview's own 1180px content box and
+          its buttons fell outside the panel. As a sibling it also stays open
+          when the preview is closed, which is the right way round: closing the
+          preview mid-publish must not take the progress and the recording id
+          away with it. */}
+      <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} guideId={guide.id} guide={guide} steps={steps} />
+    </>
   );
 }

@@ -4,7 +4,7 @@ import { DEFAULT_TARGET_COLOR } from '@/core/screenshot/types';
 import { getExtensionURL, localStorage } from '@/lib/browser-api';
 
 export const BRAND_LOGO_MAX_WIDTH = 320;
-const FALLBACK_LOGO_PATH = '/mimik-mark.png';
+const FALLBACK_LOGO_PATH = '/panoptic-mark.png';
 
 export const defaultFooterLine = () => `© ${new Date().getFullYear()}`;
 
