@@ -437,6 +437,7 @@ panoptic:
   kindeIssuer: Kinde issuer
   kindeClientId: Kinde client id
   defaultsNote: These already point at Panoptic's own hub. Change them only if you publish to a hub of your own.
+  managedNote: These are set by your organisation's browser policy and cannot be changed here.
   notConnected: Not connected
   signIn: Sign in
 

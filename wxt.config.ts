@@ -37,6 +37,24 @@ export default defineConfig({
   manifest: ({ browser }) => {
     const isFirefox = browser === 'firefox';
     return {
+      /*
+       * Fixes the Chromium extension id, so an unpacked build, a self-hosted
+       * .crx and a Web Store listing all share one id. The Kinde callback URL,
+       * the hub's RECORDINGS_ALLOWED_ORIGINS and the Intune force-install
+       * policy all name that id. The matching private key is in 1Password as
+       * "Panoptic Capture extension signing key"; only a Web Store upload of
+       * the very first version needs it. This is a public key, not a secret.
+       */
+      ...(isFirefox
+        ? {}
+        : {
+            key: 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuA8sQ8qyjO+CPiXsiVdDDwGo1j120Km84f2u2HFv7njfpDQlwrxzthK2YIcp1CjsY2gWK8eDORlKFZO68op9+93ohfovqcfSwowoBdMsYJKr0sZPHQvCJhidKyGIdcaQoxcLawxSlj+VkJj1wYZE5P12D8BbbYEGVJEHrR3dOtjy1QlwyQ9UlMr+2UFLDkE7X6KzvrTu544wTGzq1oAYEuxK/zRG3ESW9s/xtsv94AwDVI6DBd24UutiI+d0wrzRNI8aIT1JWP9Y4M2ypDNQddiC/kNGzh1hGkkHrfUU+ER+6hhZ3sr4WPT3PXpcEFT599jooycOEzVimSL7vaUrSQIDAQAB',
+          }),
+      /*
+       * Lets an enterprise policy (Intune, Group Policy, a macOS profile) set
+       * the hub URL, Kinde issuer and client id through browser.storage.managed.
+       */
+      storage: { managed_schema: 'managed_schema.json' },
       name: "__MSG_app_store_title__",
       description: "__MSG_app_description__",
       default_locale: "en",

@@ -5,7 +5,9 @@ import { currentIdentity, type PanopticIdentity, signIn, signOut } from '@/lib/p
 import {
   DEFAULT_HUB_URL,
   DEFAULT_KINDE_ISSUER,
+  loadManagedFields,
   loadPanopticConfig,
+  type ManagedFields,
   type PanopticConfig,
   savePanopticConfig,
 } from '@/lib/panoptic/config';
@@ -23,6 +25,7 @@ function identityLabel(identity: PanopticIdentity): string {
 
 export default function PanopticSettings() {
   const [config, setConfig] = useState<PanopticConfig | null>(null);
+  const [managed, setManaged] = useState<ManagedFields>({});
   const [identity, setIdentity] = useState<PanopticIdentity | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -31,6 +34,7 @@ export default function PanopticSettings() {
 
   useEffect(() => {
     void loadPanopticConfig().then(setConfig);
+    void loadManagedFields().then(setManaged);
     void currentIdentity().then(setIdentity);
   }, []);
 
@@ -117,6 +121,7 @@ export default function PanopticSettings() {
             <Input
               value={config.hubUrl}
               onChange={(e) => update({ hubUrl: e.target.value })}
+              disabled={managed.hubUrl}
               placeholder={DEFAULT_HUB_URL}
               className="h-8 text-[12px] rounded-lg border-border"
             />
@@ -129,6 +134,7 @@ export default function PanopticSettings() {
             <Input
               value={config.kindeIssuer}
               onChange={(e) => update({ kindeIssuer: e.target.value })}
+              disabled={managed.kindeIssuer}
               placeholder={DEFAULT_KINDE_ISSUER}
               className="h-8 text-[12px] rounded-lg border-border"
             />
@@ -141,11 +147,14 @@ export default function PanopticSettings() {
             <Input
               value={config.kindeClientId}
               onChange={(e) => update({ kindeClientId: e.target.value })}
+              disabled={managed.kindeClientId}
               className="h-8 text-[12px] rounded-lg border-border"
             />
           </div>
 
-          <p className="text-[10px] text-muted-foreground leading-relaxed">{i18n.t('panoptic.defaultsNote')}</p>
+          <p className="text-[10px] text-muted-foreground leading-relaxed">
+            {Object.keys(managed).length ? i18n.t('panoptic.managedNote') : i18n.t('panoptic.defaultsNote')}
+          </p>
 
           <div className="flex items-center justify-between gap-2 border-t border-secondary pt-3">
             <span className="text-[11px] text-muted-foreground truncate">

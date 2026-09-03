@@ -1,4 +1,4 @@
-import { localStorage } from '@/lib/browser-api';
+import { localStorage, managedStorage } from '@/lib/browser-api';
 
 /*
  * Panoptic's own documentation hub and Kinde tenant. A fork of this fork points
@@ -6,13 +6,22 @@ import { localStorage } from '@/lib/browser-api';
  * in Settings. Nothing else in the extension hard-codes an address.
  */
 export const DEFAULT_HUB_URL = 'https://docs.panoptic.tools';
-export const DEFAULT_KINDE_ISSUER = 'https://panoptic.kinde.com';
+export const DEFAULT_KINDE_ISSUER = 'https://panopticitsolutions.kinde.com';
 /*
- * Blank on purpose. Shipping a guessed client id would fail at the Kinde
- * consent screen with a message nobody can act on, so sign-in refuses early and
- * asks for the id instead.
+ * The extension's own Kinde application: a public PKCE client, so the id is
+ * not a secret and shipping it means nobody has to type it. A fork pointing at
+ * another tenant replaces it here or in Settings.
  */
-export const DEFAULT_KINDE_CLIENT_ID = '';
+export const DEFAULT_KINDE_CLIENT_ID = '8bd85dbbc6c6427eaaf2380dcf706c14';
+
+/*
+ * Keys in browser.storage.managed, set by an enterprise policy (Intune, Group
+ * Policy, a macOS profile) through the extension's managed_schema. A value set
+ * here wins over what the person typed, and the fields go read-only.
+ */
+export const MANAGED_HUB_URL_KEY = 'hubUrl';
+export const MANAGED_KINDE_ISSUER_KEY = 'kindeIssuer';
+export const MANAGED_KINDE_CLIENT_ID_KEY = 'kindeClientId';
 
 export const HUB_URL_KEY = 'panopticHubUrl';
 export const KINDE_ISSUER_KEY = 'panopticKindeIssuer';
@@ -75,12 +84,39 @@ function safeOrigin(value: unknown, fallback: string, label: string): string {
   }
 }
 
+/** Which fields an enterprise policy has fixed. Empty when unmanaged. */
+export type ManagedFields = Partial<Record<keyof PanopticConfig, true>>;
+
+async function managedValues(): Promise<Partial<PanopticConfig>> {
+  const policy = await managedStorage.get([MANAGED_HUB_URL_KEY, MANAGED_KINDE_ISSUER_KEY, MANAGED_KINDE_CLIENT_ID_KEY]);
+  const out: Partial<PanopticConfig> = {};
+  if (typeof policy?.[MANAGED_HUB_URL_KEY] === 'string') out.hubUrl = policy[MANAGED_HUB_URL_KEY] as string;
+  if (typeof policy?.[MANAGED_KINDE_ISSUER_KEY] === 'string')
+    out.kindeIssuer = policy[MANAGED_KINDE_ISSUER_KEY] as string;
+  if (typeof policy?.[MANAGED_KINDE_CLIENT_ID_KEY] === 'string')
+    out.kindeClientId = policy[MANAGED_KINDE_CLIENT_ID_KEY] as string;
+  return out;
+}
+
+export async function loadManagedFields(): Promise<ManagedFields> {
+  const managed = await managedValues();
+  const fields: ManagedFields = {};
+  if (managed.hubUrl?.trim()) fields.hubUrl = true;
+  if (managed.kindeIssuer?.trim()) fields.kindeIssuer = true;
+  if (managed.kindeClientId?.trim()) fields.kindeClientId = true;
+  return fields;
+}
+
 export async function loadPanopticConfig(): Promise<PanopticConfig> {
-  const stored = await localStorage.get([HUB_URL_KEY, KINDE_ISSUER_KEY, KINDE_CLIENT_ID_KEY]);
+  const [stored, managed] = await Promise.all([
+    localStorage.get([HUB_URL_KEY, KINDE_ISSUER_KEY, KINDE_CLIENT_ID_KEY]),
+    managedValues(),
+  ]);
+  // Policy first, then what the person saved, then the shipped default.
   return {
-    hubUrl: safeOrigin(stored?.[HUB_URL_KEY], DEFAULT_HUB_URL, 'hub URL'),
-    kindeIssuer: safeOrigin(stored?.[KINDE_ISSUER_KEY], DEFAULT_KINDE_ISSUER, 'Kinde issuer'),
-    kindeClientId: storedText(stored?.[KINDE_CLIENT_ID_KEY], DEFAULT_KINDE_CLIENT_ID),
+    hubUrl: safeOrigin(managed.hubUrl ?? stored?.[HUB_URL_KEY], DEFAULT_HUB_URL, 'hub URL'),
+    kindeIssuer: safeOrigin(managed.kindeIssuer ?? stored?.[KINDE_ISSUER_KEY], DEFAULT_KINDE_ISSUER, 'Kinde issuer'),
+    kindeClientId: storedText(managed.kindeClientId ?? stored?.[KINDE_CLIENT_ID_KEY], DEFAULT_KINDE_CLIENT_ID),
   };
 }
 

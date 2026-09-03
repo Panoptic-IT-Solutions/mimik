@@ -1,0 +1,20 @@
+{
+  "type": "object",
+  "properties": {
+    "hubUrl": {
+      "type": "string",
+      "title": "Panoptic Docs hub URL",
+      "description": "Origin of the documentation hub recordings are published to, e.g. https://docs.panoptic.tools"
+    },
+    "kindeIssuer": {
+      "type": "string",
+      "title": "Kinde issuer",
+      "description": "Kinde tenant the extension signs in against, e.g. https://panopticitsolutions.kinde.com"
+    },
+    "kindeClientId": {
+      "type": "string",
+      "title": "Kinde client id",
+      "description": "Client id of the extension's Kinde application (a public PKCE client)"
+    }
+  }
+}
