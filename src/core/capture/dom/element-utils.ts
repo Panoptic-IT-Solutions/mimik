@@ -29,11 +29,33 @@ export function isTextField(el: Element): boolean {
   return el instanceof HTMLTextAreaElement || (el instanceof HTMLElement && el.isContentEditable);
 }
 
+/**
+ * True when a click on `el` will replace the current page with another one.
+ *
+ * Only a same-tab link counts. A link into a new window, a download, or a fragment-only
+ * href leaves this page where it is, so the screenshot can be taken after the click and
+ * there is no reason to hold the click back.
+ */
 export function isNavigatingClick(el: HTMLElement): boolean {
   const anchor = el.closest('a[href]');
   if (!anchor) return false;
   const href = anchor.getAttribute('href');
-  return !(!href || href === '#' || href.startsWith('javascript:'));
+  if (!href || href === '#' || href.startsWith('javascript:')) return false;
+  if (anchor.hasAttribute('download')) return false;
+  const target = anchor.getAttribute('target');
+  return !target || target === '_self';
+}
+
+/**
+ * True when a click on `el` submits a form, which usually unloads the page as well.
+ *
+ * A `<button>` inside a form submits unless it says otherwise, so the default type is
+ * treated the same as an explicit `type="submit"`.
+ */
+export function isSubmitClick(el: HTMLElement): boolean {
+  if (el instanceof HTMLButtonElement) return el.type === 'submit' && el.form !== null;
+  if (el instanceof HTMLInputElement) return (el.type === 'submit' || el.type === 'image') && el.form !== null;
+  return false;
 }
 
 export function isTooLarge(el: Element): boolean {

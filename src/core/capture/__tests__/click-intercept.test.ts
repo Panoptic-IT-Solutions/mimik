@@ -9,6 +9,11 @@ function el(html: string): HTMLElement {
   return host.firstElementChild as HTMLElement;
 }
 
+function inForm(html: string): HTMLElement {
+  const form = el(`<form action="/go">${html}</form>`);
+  return form.firstElementChild as HTMLElement;
+}
+
 function click(over: Partial<MouseEventInit> & { isTrusted?: boolean } = {}): MouseEvent {
   return {
     isTrusted: true,
@@ -28,36 +33,50 @@ function click(over: Partial<MouseEventInit> & { isTrusted?: boolean } = {}): Mo
 }
 
 describe('shouldInterceptClick', () => {
-  it('intercepts an ordinary button, which is the whole point', () => {
-    expect(shouldInterceptClick(el('<button>Copy link</button>'), click())).toBe(true);
+  it('intercepts a same-tab link, which is about to take the page away', () => {
+    expect(shouldInterceptClick(el('<a href="/next">Next</a>'), click())).toBe(true);
+    expect(shouldInterceptClick(el('<a href="/next" target="_self">Next</a>'), click())).toBe(true);
+  });
+
+  it('intercepts a form submit, which usually takes the page away too', () => {
+    expect(shouldInterceptClick(inForm('<button>Save</button>'), click())).toBe(true);
+    expect(shouldInterceptClick(inForm('<button type="submit">Save</button>'), click())).toBe(true);
+    expect(shouldInterceptClick(inForm('<input type="submit" value="Save">'), click())).toBe(true);
+  });
+
+  it('leaves a toggle button alone so the page responds at once', () => {
+    expect(shouldInterceptClick(el('<button aria-expanded="false">Folder</button>'), click())).toBe(false);
+    expect(shouldInterceptClick(inForm('<button type="button">Show</button>'), click())).toBe(false);
+    expect(shouldInterceptClick(el('<button>Copy link</button>'), click())).toBe(false);
+  });
+
+  it('leaves a link that opens a new window or a download alone, since this page stays', () => {
+    expect(shouldInterceptClick(el('<a href="/next" target="_blank">Next</a>'), click())).toBe(false);
+    expect(shouldInterceptClick(el('<a href="/file.pdf" download>File</a>'), click())).toBe(false);
+    expect(shouldInterceptClick(el('<a href="#">Top</a>'), click())).toBe(false);
+  });
+
+  it('leaves a modified click alone so the browser can open a new tab', () => {
+    expect(shouldInterceptClick(el('<a href="/next">Next</a>'), click({ metaKey: true }))).toBe(false);
+    expect(shouldInterceptClick(el('<a href="/next">Next</a>'), click({ ctrlKey: true }))).toBe(false);
+    expect(shouldInterceptClick(el('<a href="/next">Next</a>'), click({ shiftKey: true }))).toBe(false);
   });
 
   it('lets our own replayed click through untouched', () => {
-    expect(shouldInterceptClick(el('<button>Copy link</button>'), click({ isTrusted: false }))).toBe(false);
+    expect(shouldInterceptClick(inForm('<button>Save</button>'), click({ isTrusted: false }))).toBe(false);
   });
 
-  it('steps aside for a shift-click so the real action can happen', () => {
-    expect(shouldInterceptClick(el('<button>Copy link</button>'), click({ shiftKey: true }))).toBe(false);
-  });
-
-  it('leaves native dropdowns alone, which break when their click is blocked', () => {
+  it('leaves native dropdowns and checkboxes alone, which break when their click is blocked', () => {
     expect(shouldInterceptClick(el('<select><option>a</option></select>'), click())).toBe(false);
-    expect(shouldInterceptClick(el('<option>a</option>'), click())).toBe(false);
+    expect(shouldInterceptClick(el('<input type="checkbox">'), click())).toBe(false);
   });
 
-  it('leaves editable surfaces alone so the caret still lands', () => {
+  it('leaves editable surfaces and text fields to the typing session', () => {
     const editable = el('<div contenteditable="true">notes</div>');
     Object.defineProperty(editable, 'isContentEditable', { value: true });
     expect(shouldInterceptClick(editable, click())).toBe(false);
-  });
-
-  it('leaves text fields to the typing session', () => {
     expect(shouldInterceptClick(el('<input type="text">'), click())).toBe(false);
     expect(shouldInterceptClick(el('<textarea></textarea>'), click())).toBe(false);
-  });
-
-  it('still intercepts a checkbox, which is a click and not typing', () => {
-    expect(shouldInterceptClick(el('<input type="checkbox">'), click())).toBe(true);
   });
 });
 

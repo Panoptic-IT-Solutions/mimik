@@ -172,22 +172,6 @@ class CaptureController {
       return;
     }
 
-    if (isNavigatingClick(target)) {
-      me.preventDefault();
-      me.stopImmediatePropagation();
-      this.enqueue(this.capture('click', target, { x: me.clientX, y: me.clientY }));
-      const anchor = target.closest('a[href]') as HTMLAnchorElement;
-      if (anchor) {
-        const href = anchor.href;
-        requestAnimationFrame(() =>
-          setTimeout(() => {
-            window.location.href = href;
-          }, INTERCEPT_DELAY_MS),
-        );
-      }
-      return;
-    }
-
     const task = this.capture('click', target, { x: me.clientX, y: me.clientY });
 
     if (!shouldInterceptClick(target, me)) {
@@ -195,16 +179,41 @@ class CaptureController {
       return;
     }
 
+    // The click is about to take the page away, so the screenshot has to be asked for
+    // before the page lets go of it.
     me.preventDefault();
     me.stopImmediatePropagation();
+
+    if (isNavigatingClick(target)) {
+      this.enqueue(task);
+      const href = (target.closest('a[href]') as HTMLAnchorElement).href;
+      requestAnimationFrame(() =>
+        setTimeout(() => {
+          window.location.href = href;
+        }, INTERCEPT_DELAY_MS),
+      );
+      return;
+    }
+
+    // A form submit is replayed once the screenshot is in, and by CAPTURE_BUDGET_MS at
+    // the latest, timed from the click itself rather than from when the queue reaches
+    // it. A slow or stuck capture can hold the submit up but never swallow it.
     const init = replayInit(me);
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      replayClick(target, init);
+    };
+    const deadline = setTimeout(release, CAPTURE_BUDGET_MS);
     this.enqueue(async () => {
       try {
         await Promise.race([task(), sleep(CAPTURE_BUDGET_MS)]);
       } catch (err) {
         logger.warn('Capture failed, replaying the click anyway', err);
       } finally {
-        replayClick(target, init);
+        clearTimeout(deadline);
+        release();
       }
     });
   }

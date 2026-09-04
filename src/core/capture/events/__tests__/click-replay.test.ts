@@ -72,22 +72,50 @@ afterEach(() => {
   document.body.innerHTML = '';
 });
 
-describe('click interception', () => {
-  it('keeps the click from the page until the screenshot has been taken', async () => {
-    const button = place('button');
-    let seen = 0;
-    button.addEventListener('click', () => {
-      seen += 1;
+function placeSubmit(): HTMLButtonElement {
+  const form = document.createElement('form');
+  form.action = '/go';
+  form.addEventListener('submit', (e) => e.preventDefault());
+  document.body.appendChild(form);
+  const button = document.createElement('button');
+  button.textContent = 'Save';
+  Object.defineProperty(button, 'getBoundingClientRect', {
+    value: () => ({ x: 4, y: 6, top: 6, left: 4, right: 124, bottom: 46, width: 120, height: 40 }),
+  });
+  form.appendChild(button);
+  return button;
+}
+
+function captureCalls() {
+  return vi.mocked(sendMessage).mock.calls.filter((c) => c[0] === 'captureStep');
+}
+
+describe('clicks that stay on the page', () => {
+  it('lets a delegated toggle handle the click at once and records one step', async () => {
+    // React 17+ listens on its root container, not on the button, so a click that is
+    // stopped on the way down never reaches it. The folder toggles in a docs sidebar
+    // are exactly this shape.
+    const root = document.createElement('div');
+    document.body.appendChild(root);
+    const button = document.createElement('button');
+    button.setAttribute('aria-expanded', 'false');
+    button.textContent = 'Folder';
+    root.appendChild(button);
+    root.addEventListener('click', (e) => {
+      const target = (e.target as Element).closest('button');
+      if (!target) return;
+      target.setAttribute('aria-expanded', target.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
     });
 
-    userClick(button);
-    await settle();
+    const event = userClick(button);
 
-    expect(seen).toBe(0);
-    expect(sendMessage).toHaveBeenCalledWith('captureStep', expect.anything());
+    expect(button.getAttribute('aria-expanded')).toBe('true');
+    expect(event.defaultPrevented).toBe(false);
+    await settle();
+    expect(captureCalls()).toHaveLength(1);
   });
 
-  it('performs the click once the capture resolves', async () => {
+  it('does not hold back an ordinary button', async () => {
     const button = place('button');
     let seen = 0;
     button.addEventListener('click', () => {
@@ -95,39 +123,10 @@ describe('click interception', () => {
     });
 
     userClick(button);
-    await settle();
-    expect(seen).toBe(0);
-
-    for (const d of pending) d.resolve();
-    await settle();
 
     expect(seen).toBe(1);
-  });
-
-  it('still performs the click when the capture fails, so nothing is swallowed', async () => {
-    const button = place('button');
-    let seen = 0;
-    button.addEventListener('click', () => {
-      seen += 1;
-    });
-
-    userClick(button);
     await settle();
-    for (const d of pending) d.reject(new Error('background gone'));
-    await settle();
-
-    expect(seen).toBe(1);
-  });
-
-  it('does not record its own replay as a second step', async () => {
-    const button = place('button');
-
-    userClick(button);
-    await settle();
-    for (const d of pending) d.resolve();
-    await settle();
-
-    expect(vi.mocked(sendMessage).mock.calls.filter((c) => c[0] === 'captureStep')).toHaveLength(1);
+    expect(captureCalls()).toHaveLength(1);
   });
 
   it('lets a shift-click through untouched and records nothing', async () => {
@@ -155,5 +154,92 @@ describe('click interception', () => {
     await settle();
 
     expect(seen).toBe(1);
+  });
+});
+
+describe('clicks that take the page away', () => {
+  it('keeps a form submit from the page until the screenshot has been taken', async () => {
+    const button = placeSubmit();
+    let seen = 0;
+    button.addEventListener('click', () => {
+      seen += 1;
+    });
+
+    userClick(button);
+    await settle();
+
+    expect(seen).toBe(0);
+    expect(sendMessage).toHaveBeenCalledWith('captureStep', expect.anything());
+  });
+
+  it('performs the submit once the capture resolves', async () => {
+    const button = placeSubmit();
+    let seen = 0;
+    button.addEventListener('click', () => {
+      seen += 1;
+    });
+
+    userClick(button);
+    await settle();
+    expect(seen).toBe(0);
+
+    for (const d of pending) d.resolve();
+    await settle();
+
+    expect(seen).toBe(1);
+  });
+
+  it('still performs the submit when the capture fails, so nothing is swallowed', async () => {
+    const button = placeSubmit();
+    let seen = 0;
+    button.addEventListener('click', () => {
+      seen += 1;
+    });
+
+    userClick(button);
+    await settle();
+    for (const d of pending) d.reject(new Error('background gone'));
+    await settle();
+
+    expect(seen).toBe(1);
+  });
+
+  it('performs the submit by the deadline even when an earlier capture never answers', async () => {
+    vi.useFakeTimers();
+    try {
+      // An earlier click whose capture the background never answers holds the queue.
+      userClick(place('button'));
+      await vi.advanceTimersByTimeAsync(50);
+
+      const button = placeSubmit();
+      let seen = 0;
+      button.addEventListener('click', () => {
+        seen += 1;
+      });
+      userClick(button);
+
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(seen).toBe(0);
+      await vi.advanceTimersByTimeAsync(1000);
+      expect(seen).toBe(1);
+
+      // The queue catching up later must not submit the form a second time.
+      for (const d of pending) d.resolve();
+      await vi.advanceTimersByTimeAsync(3000);
+      expect(seen).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does not record its own replay as a second step', async () => {
+    const button = placeSubmit();
+
+    userClick(button);
+    await settle();
+    for (const d of pending) d.resolve();
+    await settle();
+
+    expect(captureCalls()).toHaveLength(1);
   });
 });
