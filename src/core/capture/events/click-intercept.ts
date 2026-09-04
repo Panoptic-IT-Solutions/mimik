@@ -1,4 +1,4 @@
-import { isTextField } from '../dom/element-utils';
+import { isNavigatingClick, isSubmitClick, isTextField } from '../dom/element-utils';
 
 const replayed = new WeakSet<Event>();
 
@@ -6,11 +6,19 @@ export function isReplayedClick(event: Event): boolean {
   return replayed.has(event);
 }
 
+/**
+ * Whether the recorder should hold this click back until the screenshot is taken.
+ *
+ * Only a click that is about to take the page away qualifies: a same-tab link or a form
+ * submit. Everything else, a menu toggle, a checkbox, a button that opens a dialog, is
+ * left to the page untouched and screenshotted a few frames later. Holding those back
+ * meant the page did not respond for as long as the screenshot took, and a click that
+ * arrives late or not at all is worse than a screenshot taken a frame after the click.
+ */
 export function shouldInterceptClick(target: HTMLElement, event: MouseEvent): boolean {
-  if (!event.isTrusted || event.shiftKey) return false;
-  if (target instanceof HTMLSelectElement || target instanceof HTMLOptionElement) return false;
-  if (target.isContentEditable) return false;
-  return !isTextField(target);
+  if (!event.isTrusted || event.shiftKey || event.ctrlKey || event.metaKey) return false;
+  if (target.isContentEditable || isTextField(target)) return false;
+  return isNavigatingClick(target) || isSubmitClick(target);
 }
 
 export function replayInit(event: MouseEvent): PointerEventInit {

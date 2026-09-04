@@ -33,6 +33,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/ui/components/ui/popo
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/ui/components/ui/select';
 import ColorPicker from '@/ui/shared/ColorPicker';
 import MicrophonePicker from '@/ui/shared/MicrophonePicker';
+import PanopticSettings from '@/ui/shared/PanopticSettings';
 import { changedSettings, type SettingsSnapshot } from '@/ui/shared/settings-autosave';
 
 interface SettingsViewProps {
@@ -604,6 +605,8 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
             </div>
           ))}
         </div>
+
+        <PanopticSettings />
 
         <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-secondary text-[10px] text-muted-foreground leading-relaxed">
           <Shield size={12} className="shrink-0 mt-0.5 text-accent" />

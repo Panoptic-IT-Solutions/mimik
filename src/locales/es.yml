@@ -2,9 +2,9 @@ meta:
   locale: es
 
 app:
-  name: Mimik
-  store_title: "Mimik: guías paso a paso y tutoriales"
-  description: "Graba cualquier tarea del navegador como una guía paso a paso. Edita, narra con voz y exporta a vídeo, PDF o DOCX. Código abierto."
+  name: Panoptic Capture
+  store_title: "Panoptic Capture: graba y publica guías"
+  description: "Graba un flujo del navegador como una guía paso a paso y publícala directamente en el centro de documentación de Panoptic."
 
 common:
   loading: Cargando...
@@ -90,7 +90,7 @@ settings:
   apiKey: Clave API
   aiLanguage: Idioma de descripciones
   voiceNarration: "Narración por voz"
-  voiceUsingAiKey: "No hay clave de voz, así que Mimik usa la clave de OpenAI de Descripciones con IA de arriba."
+  voiceUsingAiKey: "No hay clave de voz, así que Panoptic Capture usa la clave de OpenAI de Descripciones con IA de arriba."
   aiNoKey: "No hay clave de API, así que los pasos usarán descripciones básicas por reglas."
   voiceNoKey: "No hay ninguna clave de API configurada, así que tus grabaciones no se narrarán."
   microphone: "Micrófono"
@@ -99,12 +99,12 @@ settings:
   microphoneGrantAccess: "Permitir acceso al micrófono"
   microphoneNone: "No se encontró ningún micrófono. Conecta uno y aparecerá aquí."
   microphoneUnavailable: "Micrófono no disponible"
-  microphoneMissing: "El micrófono que elegiste no está disponible ahora mismo, así que Mimik usará el predeterminado del sistema."
+  microphoneMissing: "El micrófono que elegiste no está disponible ahora mismo, así que Panoptic Capture usará el predeterminado del sistema."
   microphoneTest: "Probar micrófono"
   microphoneStatusAllowed: Permitido
   microphoneStatusBlocked: Bloqueado
   microphoneStatusPending: Aún sin permiso
-  microphoneBlocked: Tu navegador está bloqueando el micrófono para Mimik. Abre la configuración del sitio desde el icono a la izquierda de la barra de direcciones y pon Micrófono en Permitir.
+  microphoneBlocked: Tu navegador está bloqueando el micrófono para Panoptic Capture. Abre la configuración del sitio desde el icono a la izquierda de la barra de direcciones y pon Micrófono en Permitir.
   microphoneUnblockHow: ¿Cómo lo desbloqueo?
   microphoneTestStop: Detener prueba
   microphoneTestFailed: "No se pudo abrir ese micrófono. Elige otro e inténtalo de nuevo."
@@ -119,7 +119,7 @@ settings:
   footerLinePlaceholder: "p. ej. Confidencial — solo uso interno"
   footerPresetConfidential: "Confidencial — solo uso interno"
   footerPresetNoDistribute: "No distribuir"
-  attribution: 'Mostrar "Made with Mimik"'
+  attribution: 'Mostrar "Made with Panoptic Capture"'
   saveSettings: Guardar ajustes
   saved: Guardado
   validatingKey: "Comprobando clave\u2026"
@@ -130,8 +130,8 @@ settings:
   smartBlur: Desenfoque inteligente
   privacyNotice: "Tus claves y tu audio solo van al proveedor que elijas. Nada más sale de tu navegador."
   bugReport: "¿Encontraste un bug? Repórtalo en GitHub"
-  starCtaTitle: "¿Te gusta Mimik?"
-  starCtaMessage: "Una estrella en GitHub nos ayuda un montón y hace que más gente descubra Mimik."
+  starCtaTitle: "¿Te gusta Panoptic Capture?"
+  starCtaMessage: "Una estrella en GitHub ayuda a que más gente descubra el proyecto original en el que se basa."
   starOnGithub: Dar estrella en GitHub
 
 blurPresets:
@@ -401,7 +401,7 @@ exportMenu:
 
 onboarding:
   welcomeBadge: Bienvenido
-  welcomeTitle: "¡Ya tienes Mimik instalado!"
+  welcomeTitle: "¡Ya tienes Panoptic Capture instalado!"
   welcomeMessage: "En unos pasos vas a poder capturar flujos de trabajo y generar guías automáticas. Sin cuenta, sin registros \u2014 todo se queda en tu navegador."
   getStarted: Empezar
   stepOf: "Paso $1 de $2"
@@ -410,9 +410,9 @@ onboarding:
   aiGenerated: Generado por IA
   aiGeneratedDescription: "Descripción generada por IA"
   voiceTitle: Habla y luego actúa
-  voiceMessage: "Di lo que vas a hacer y después hazlo. Mimik une tu narración con la acción que viene justo después, así que el orden es lo que más importa."
+  voiceMessage: "Di lo que vas a hacer y después hazlo. Panoptic Capture une tu narración con la acción que viene justo después, así que el orden es lo que más importa."
   voiceRecordHint: "La narración permanece desactivada hasta que la actives. Usa el botón de micrófono en el panel lateral mientras grabas, así eliges guía por guía."
-  voiceDataNotice: "Tu audio se envía al proveedor que elijas aquí, con tu propia clave API. Nada más de Mimik sale de tu navegador."
+  voiceDataNotice: "Tu audio se envía al proveedor que elijas aquí, con tu propia clave API. Nada más de Panoptic Capture sale de tu navegador."
   voiceDemoLabel: "Cómo se asigna la narración"
   voiceDemoSay: Dices
   voiceDemoQuote: "Ahora voy a abrir los ajustes de facturación"
@@ -424,28 +424,28 @@ onboarding:
   screenshotPreview: Vista previa
   notEnabled: No activado
   categoriesProtected: "$1 categorías protegidas"
-  pinTitle: Fija Mimik
-  pinMessage: Fija la extensión en tu barra para tenerla siempre a un clic. Busca el ícono de rompecabezas en Chrome y fija Mimik.
+  pinTitle: Fija Panoptic Capture
+  pinMessage: Fija la extensión en tu barra para tenerla siempre a un clic. Busca el ícono de rompecabezas en Chrome y fija Panoptic Capture.
   pinStep1Title: Haz clic en el ícono de rompecabezas
   pinStep1Sub: Arriba a la derecha en tu barra del navegador
-  pinStep2Title: Busca Mimik
+  pinStep2Title: Busca Panoptic Capture
   pinStep2Sub: En el desplegable de extensiones
   pinStep3Title: Haz clic en el pin
-  pinStep3Sub: Mimik aparecerá en tu barra
-  pinScreenshotAlt: Fijar extensión Mimik
+  pinStep3Sub: Panoptic Capture aparecerá en tu barra
+  pinScreenshotAlt: Fijar extensión Panoptic Capture
   starTitle: "¿Nos das una estrella?"
-  starMessage: "Mimik es gratuito y de código abierto. Una estrella es la forma más fácil de dar las gracias, y ayuda a que otras personas lo encuentren."
+  starMessage: "Panoptic Capture es gratuito y de código abierto, y se basa en westpoint-io/mimik. Una estrella en su repositorio es la forma más fácil de dar las gracias."
   starAction: Dar una estrella en GitHub
   starLater: "Quizá más tarde"
   doneTitle: "¡Ya estás listo!"
-  doneMessage: "Mimik está listo para capturar. Dale clic a \"Empezar a capturar\" en la extensión para grabar tu primera guía."
+  doneMessage: "Panoptic Capture está listo para capturar. Dale clic a \"Empezar a capturar\" en la extensión para grabar tu primera guía."
   featureAutoCapture: Captura automática
   featureAIAssist: Asistente de IA
   featureVoice: "Narración por voz"
   featureAnnotate: Anotar y ocultar
   featureExports: Exportar a todo
   featureSmartBlur: Desenfoque inteligente
-  openMimik: Abrir Mimik
+  openApp: Abrir Panoptic Capture
 
 steps:
   pressKey: "Presionar $1 en $2"
@@ -468,7 +468,7 @@ export:
   endLabel: "GUÍA COMPLETADA"
   stepsRange: "Pasos $1–$2 de $3"
   stepOf: "Paso $1 de $2"
-  madeWith: "Made with Mimik"
+  madeWith: "Made with Panoptic Capture"
   created: Creado
   source: Fuente
   step: Paso
@@ -510,11 +510,11 @@ voice:
 
 micPermission:
   title: Permitir acceso al micrófono
-  checkingMessage: Comprobando si Mimik ya tiene acceso al micrófono...
-  promptingMessage: Tu navegador está pidiendo permiso. Elige Permitir para que Mimik pueda grabar tu narración mientras capturas una guía. Esta pestaña se cierra sola.
+  checkingMessage: Comprobando si Panoptic Capture ya tiene acceso al micrófono...
+  promptingMessage: Tu navegador está pidiendo permiso. Elige Permitir para que Panoptic Capture pueda grabar tu narración mientras capturas una guía. Esta pestaña se cierra sola.
   grantedTitle: Micrófono listo
   grantedMessage: Te devolvemos a lo que estabas haciendo.
   deniedTitle: El acceso al micrófono está bloqueado
-  deniedMessage: Tu navegador está bloqueando el micrófono para Mimik, así que la narración por voz no puede grabar. Abre la configuración del sitio desde el icono a la izquierda de la barra de direcciones, pon Micrófono en Permitir y vuelve a intentarlo. Capturar guías sigue funcionando sin esto.
+  deniedMessage: Tu navegador está bloqueando el micrófono para Panoptic Capture, así que la narración por voz no puede grabar. Abre la configuración del sitio desde el icono a la izquierda de la barra de direcciones, pon Micrófono en Permitir y vuelve a intentarlo. Capturar guías sigue funcionando sin esto.
   retry: Intentar de nuevo
-  privacy: El audio solo se guarda en memoria mientras grabas y se envía al proveedor de transcripción que hayas configurado. Mimik nunca lo almacena.
+  privacy: El audio solo se guarda en memoria mientras grabas y se envía al proveedor de transcripción que hayas configurado. Panoptic Capture nunca lo almacena.

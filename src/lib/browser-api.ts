@@ -108,6 +108,21 @@ export const localStorage = {
   set: (items: Record<string, unknown>) => browser.storage.local.set(items),
 };
 
+/*
+ * Values pushed by an enterprise policy. Read-only, and absent entirely on an
+ * unmanaged browser or one whose vendor has no managed storage, so a failure
+ * here reads as "no policy" rather than as an error.
+ */
+export const managedStorage = {
+  get: async (keys: string[]): Promise<Record<string, unknown>> => {
+    try {
+      return (await browser.storage.managed.get(keys)) ?? {};
+    } catch {
+      return {};
+    }
+  },
+};
+
 export function setSidePanelBehavior(openOnActionClick: boolean): void {
   if (import.meta.env.BROWSER === 'firefox') return;
   browser.sidePanel.setPanelBehavior({

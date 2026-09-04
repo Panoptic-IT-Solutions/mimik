@@ -2,9 +2,9 @@ meta:
   locale: en
 
 app:
-  name: Mimik
-  store_title: "Mimik: Step-by-Step Guides & Tutorials"
-  description: "Record any browser workflow as a step-by-step guide. Edit, voice-narrate, export to video, PDF or DOCX. Local-first, open source."
+  name: Panoptic Capture
+  store_title: "Panoptic Capture: Record & Publish Guides"
+  description: "Record a browser workflow as a step-by-step guide, then publish it straight to the Panoptic documentation hub."
 
 common:
   loading: Loading...
@@ -90,7 +90,7 @@ settings:
   apiKey: API Key
   aiLanguage: Description Language
   voiceNarration: Voice Narration
-  voiceUsingAiKey: "No voice key is set, so Mimik uses the OpenAI key from AI Descriptions above."
+  voiceUsingAiKey: "No voice key is set, so Panoptic Capture uses the OpenAI key from AI Descriptions above."
   aiNoKey: "No API key is set, so steps will use plain rule-based descriptions."
   voiceNoKey: "No API key is set, so your recordings will not be narrated."
   microphone: Microphone
@@ -99,12 +99,12 @@ settings:
   microphoneGrantAccess: Allow microphone access
   microphoneNone: No microphone was found. Plug one in and it will show up here.
   microphoneUnavailable: Unavailable microphone
-  microphoneMissing: The microphone you picked is not available right now, so Mimik will use the system default.
+  microphoneMissing: The microphone you picked is not available right now, so Panoptic Capture will use the system default.
   microphoneTest: Test microphone
   microphoneStatusAllowed: Allowed
   microphoneStatusBlocked: Blocked
   microphoneStatusPending: Not allowed yet
-  microphoneBlocked: Your browser is blocking the microphone for Mimik. Open the site settings from the icon at the left of the address bar and set Microphone to Allow.
+  microphoneBlocked: Your browser is blocking the microphone for Panoptic Capture. Open the site settings from the icon at the left of the address bar and set Microphone to Allow.
   microphoneUnblockHow: How do I unblock it?
   microphoneTestStop: Stop test
   microphoneTestFailed: That microphone could not be opened. Pick another one and try again.
@@ -119,7 +119,7 @@ settings:
   footerLinePlaceholder: "e.g. Confidential — internal use only"
   footerPresetConfidential: "Confidential — internal use only"
   footerPresetNoDistribute: "Do not distribute"
-  attribution: 'Show "Made with Mimik"'
+  attribution: 'Show "Made with Panoptic Capture"'
   saveSettings: Save Settings
   saved: Saved
   validatingKey: "Checking key\u2026"
@@ -131,7 +131,7 @@ settings:
   privacyNotice: "Your keys and audio go only to the provider you pick. Nothing else leaves your browser."
   bugReport: "Found a bug? Report it on GitHub"
   starCtaTitle: "Like what you see?"
-  starCtaMessage: A GitHub star helps others find Mimik and keeps us motivated!
+  starCtaMessage: A GitHub star helps other people find the upstream project this is built on.
   starOnGithub: Star on GitHub
 
 blurPresets:
@@ -399,9 +399,55 @@ exportMenu:
   video: Video
   cancelProgress: "Cancel · $1%"
 
+panoptic:
+  publish: Publish to Panoptic Docs
+  leavesBrowser: "This is the one thing Panoptic Capture sends out of your browser. The steps and screenshots in this guide go to $1, and nowhere else."
+  connect: Connect to Panoptic Docs
+  connecting: Connecting...
+  connectFailed: Connecting to Panoptic Docs did not finish, so nothing was sent.
+  checking: Checking whether you are connected...
+  signedInAs: "Signed in as $1"
+  signedIn: Signed in
+  signOut: Sign out
+  whereTitle: Where does this belong?
+  modeExisting: An existing page
+  modeNew: A new page
+  searchLabel: Find the page
+  searchPlaceholder: Search by title or path
+  searching: Searching...
+  searchFailed: The hub did not answer that search.
+  noPages: No page matched that search.
+  categoryLabel: Category
+  newCategory: New category
+  newCategoryLabel: Name of the new category
+  newCategoryPlaceholder: "for example email-security"
+  newCategoryHint: Lowercase letters and digits, with single hyphens between words.
+  newCategoryPath: "Created as $1"
+  publishAction: Publish
+  creating: Creating the recording...
+  uploading: "Uploading screenshot $1 of $2"
+  finishing: Finishing...
+  publishedTitle: "Published as recording $1"
+  nextStep: "Ask Claude to write this up: read recording $1"
+  copyLine: Copy
+  copied: Copied
+  someFailed: "$1 screenshot did not reach the hub."
+  someFailedPlural: "$1 screenshots did not reach the hub."
+  retryHint: The steps are on the hub already. Publishing again sends every screenshot afresh and replaces this recording.
+  retryFailed: Publish again
+  settingsTitle: Panoptic Docs
+  settingsHint: Send a guide to the documentation hub so it can be written up there.
+  hubUrl: Hub URL
+  kindeIssuer: Kinde issuer
+  kindeClientId: Kinde client id
+  defaultsNote: These already point at Panoptic's own hub. Change them only if you publish to a hub of your own.
+  managedNote: These are set by your organisation's browser policy and cannot be changed here.
+  notConnected: Not connected
+  signIn: Sign in
+
 onboarding:
   welcomeBadge: Welcome
-  welcomeTitle: "You've successfully installed Mimik!"
+  welcomeTitle: "You've successfully installed Panoptic Capture!"
   welcomeMessage: "With just a few steps, you'll be ready to auto-capture browser workflows and generate step-by-step guides. No account needed \u2014 everything stays in your browser."
   getStarted: Get started
   stepOf: "Step $1 of $2"
@@ -410,9 +456,9 @@ onboarding:
   aiGenerated: AI generated
   aiGeneratedDescription: AI-generated description
   voiceTitle: Talk, then act
-  voiceMessage: Say what you are about to do, then do it. Mimik matches your narration to the action that follows it, so the order matters more than anything else.
+  voiceMessage: Say what you are about to do, then do it. Panoptic Capture matches your narration to the action that follows it, so the order matters more than anything else.
   voiceRecordHint: Narration stays off until you turn it on. Use the microphone button in the side panel while recording, so you choose per guide.
-  voiceDataNotice: Your audio is sent to the provider you pick here, using your own API key. Nothing else in Mimik leaves your browser.
+  voiceDataNotice: Your audio is sent to the provider you pick here, using your own API key. Nothing else in Panoptic Capture leaves your browser.
   voiceDemoLabel: How narration lands
   voiceDemoSay: You say
   voiceDemoQuote: "Now I'll open the billing settings"
@@ -424,28 +470,28 @@ onboarding:
   screenshotPreview: Screenshot preview
   notEnabled: Not enabled
   categoriesProtected: "$1 categories protected"
-  pinTitle: Pin Mimik
-  pinMessage: Pin the extension to your toolbar for quick access. Click the puzzle icon in Chrome, then pin Mimik.
+  pinTitle: Pin Panoptic Capture
+  pinMessage: Pin the extension to your toolbar for quick access. Click the puzzle icon in Chrome, then pin Panoptic Capture.
   pinStep1Title: Click the puzzle icon
   pinStep1Sub: In the top-right of your browser toolbar
-  pinStep2Title: Find Mimik
+  pinStep2Title: Find Panoptic Capture
   pinStep2Sub: In the extensions dropdown
   pinStep3Title: Click the pin icon
-  pinStep3Sub: Mimik will appear in your toolbar
-  pinScreenshotAlt: Pin Mimik extension
+  pinStep3Sub: Panoptic Capture will appear in your toolbar
+  pinScreenshotAlt: Pin Panoptic Capture extension
   starTitle: Mind giving us a star?
-  starMessage: "Mimik is free and open source. A star is the easiest way to say thanks, and it helps other people find it."
+  starMessage: "Panoptic Capture is free and open source, built on westpoint-io/mimik. A star on their repo is the easiest way to say thanks."
   starAction: Star on GitHub
   starLater: Maybe later
   doneTitle: "You're all set!"
-  doneMessage: "Mimik is ready to capture your workflows. Click \"Start Capture\" in the extension to record your first guide."
+  doneMessage: "Panoptic Capture is ready to capture your workflows. Click \"Start Capture\" in the extension to record your first guide."
   featureAutoCapture: Auto-capture
   featureAIAssist: AI assist
   featureVoice: Voice narration
   featureAnnotate: Annotate & redact
   featureExports: Export anywhere
   featureSmartBlur: Smart blur
-  openMimik: Open Mimik
+  openApp: Open Panoptic Capture
 
 steps:
   pressKey: "Press $1 on $2"
@@ -468,7 +514,7 @@ export:
   endLabel: "GUIDE COMPLETE"
   stepsRange: "Steps $1–$2 of $3"
   stepOf: "Step $1 of $2"
-  madeWith: "Made with Mimik"
+  madeWith: "Made with Panoptic Capture"
   created: Created
   source: Source
   step: Step
@@ -510,11 +556,11 @@ voice:
 
 micPermission:
   title: Allow microphone access
-  checkingMessage: Checking whether Mimik already has microphone access...
-  promptingMessage: Your browser is asking for permission. Choose Allow so Mimik can record your narration while you capture a guide. This tab closes on its own.
+  checkingMessage: Checking whether Panoptic Capture already has microphone access...
+  promptingMessage: Your browser is asking for permission. Choose Allow so Panoptic Capture can record your narration while you capture a guide. This tab closes on its own.
   grantedTitle: Microphone ready
   grantedMessage: Taking you back to what you were doing.
   deniedTitle: Microphone access is blocked
-  deniedMessage: Your browser is blocking the microphone for Mimik, so voice narration cannot record. Open the site settings from the icon at the left of the address bar, set Microphone to Allow, then try again. Capturing guides keeps working without it.
+  deniedMessage: Your browser is blocking the microphone for Panoptic Capture, so voice narration cannot record. Open the site settings from the icon at the left of the address bar, set Microphone to Allow, then try again. Capturing guides keeps working without it.
   retry: Try again
-  privacy: Audio is held in memory only while you record and is sent to the transcription provider you configured. Mimik never stores it.
+  privacy: Audio is held in memory only while you record and is sent to the transcription provider you configured. Panoptic Capture never stores it.
