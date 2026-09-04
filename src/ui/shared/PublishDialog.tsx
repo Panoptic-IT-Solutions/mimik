@@ -1,8 +1,9 @@
-import { AlertTriangle, Check, CloudUpload, Copy, Loader2, Shield } from 'lucide-react';
+import { AlertTriangle, Check, CloudUpload, Copy, FolderPlus, Loader2, Shield } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { i18n } from '#imports';
 import { actionSteps } from '@/core/guides/blocks';
 import type { Guide, Step } from '@/core/guides/types';
+import { isValidCategoryName, NEW_CATEGORY, resolveCategory } from '@/core/publish/category';
 import { deleteRecording, searchTargets, type TargetPage } from '@/core/publish/panoptic-client';
 import {
   type PublishProgress,
@@ -87,7 +88,8 @@ export default function PublishDialog({ open, onOpenChange, guideId, guide, step
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState('');
   const [path, setPath] = useState('');
-  const [category, setCategory] = useState('');
+  const [categoryChoice, setCategoryChoice] = useState('');
+  const [newCategory, setNewCategory] = useState('');
 
   const [phase, setPhase] = useState<Phase>('idle');
   const [progress, setProgress] = useState<PublishProgress | null>(null);
@@ -115,7 +117,7 @@ export default function PublishDialog({ open, onOpenChange, guideId, guide, step
       const last = stored[LAST_TARGET_KEY] as { mode?: TargetMode; category?: string } | undefined;
       if (!active || !last) return;
       if (last.mode) setMode(last.mode);
-      if (last.category) setCategory(last.category);
+      if (last.category) setCategoryChoice(last.category);
     });
     return () => {
       active = false;
@@ -165,6 +167,8 @@ export default function PublishDialog({ open, onOpenChange, guideId, guide, step
       setConnecting(false);
     }
   }
+
+  const category = resolveCategory(categoryChoice, newCategory, categories);
 
   async function runPublish(replacing: string | null) {
     const target: PublishTarget = mode === 'page' ? { kind: 'page', path } : { kind: 'new', category };
@@ -243,6 +247,8 @@ export default function PublishDialog({ open, onOpenChange, guideId, guide, step
 
   const failed = result?.failed ?? [];
   const ready = mode === 'page' ? path !== '' : category !== '';
+  const newName = newCategory.trim();
+  const newNameInvalid = newName !== '' && !isValidCategoryName(newName);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -377,21 +383,42 @@ export default function PublishDialog({ open, onOpenChange, guideId, guide, step
                 <label className="block text-[11px] font-semibold text-foreground mb-1">
                   {i18n.t('panoptic.categoryLabel')}
                 </label>
-                {categories.length === 0 ? (
-                  <p className="text-[11px] text-muted-foreground">{i18n.t('panoptic.noCategories')}</p>
-                ) : (
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger className="w-full rounded-lg px-3 py-2 text-[13px]">
-                      <SelectValue placeholder={i18n.t('panoptic.categoryLabel')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((name) => (
-                        <SelectItem key={name} value={name}>
-                          {name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <Select value={categoryChoice} onValueChange={setCategoryChoice}>
+                  <SelectTrigger className="w-full rounded-lg px-3 py-2 text-[13px]">
+                    <SelectValue placeholder={i18n.t('panoptic.categoryLabel')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((name) => (
+                      <SelectItem key={name} value={name}>
+                        {name}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value={NEW_CATEGORY} className={categories.length > 0 ? 'border-t border-border' : ''}>
+                      <span className="flex items-center gap-1.5">
+                        <FolderPlus size={12} className="text-accent" />
+                        {i18n.t('panoptic.newCategory')}
+                      </span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {categoryChoice === NEW_CATEGORY && (
+                  <div className="mt-2">
+                    <label className="block text-[11px] font-semibold text-foreground mb-1">
+                      {i18n.t('panoptic.newCategoryLabel')}
+                    </label>
+                    <Input
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder={i18n.t('panoptic.newCategoryPlaceholder')}
+                      aria-invalid={newNameInvalid || undefined}
+                      className={`h-8 text-[12px] rounded-lg ${newNameInvalid ? 'border-destructive' : 'border-border'}`}
+                    />
+                    <p
+                      className={`mt-1 text-[10px] leading-relaxed ${newNameInvalid ? 'text-destructive' : 'text-muted-foreground'}`}
+                    >
+                      {category ? i18n.t('panoptic.newCategoryPath', [category]) : i18n.t('panoptic.newCategoryHint')}
+                    </p>
+                  </div>
                 )}
               </div>
             )}

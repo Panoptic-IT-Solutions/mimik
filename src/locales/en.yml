@@ -418,7 +418,11 @@ panoptic:
   searchFailed: The hub did not answer that search.
   noPages: No page matched that search.
   categoryLabel: Category
-  noCategories: The hub offered no categories, so choose an existing page instead.
+  newCategory: New category
+  newCategoryLabel: Name of the new category
+  newCategoryPlaceholder: "for example email-security"
+  newCategoryHint: Lowercase letters and digits, with single hyphens between words.
+  newCategoryPath: "Created as $1"
   publishAction: Publish
   creating: Creating the recording...
   uploading: "Uploading screenshot $1 of $2"
